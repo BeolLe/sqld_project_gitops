@@ -35,7 +35,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/beolle/sqld-airflow
+          images: ghcr.io/beolle/airflow-custom
           tags: |
             type=sha
             type=raw,value=latest
