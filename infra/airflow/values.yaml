@@ -2,11 +2,11 @@ executor: KubernetesExecutor
 
 images:
   airflow:
-    repository: ghcr.io/beolle/airflow-custom
+    repository: ghcr.io/beolle/sqld-airflow
     tag: latest
     pullPolicy: Always
   pod_template:
-    repository: ghcr.io/beolle/airflow-custom
+    repository: ghcr.io/beolle/sqld-airflow
     tag: latest
     pullPolicy: Always
 
