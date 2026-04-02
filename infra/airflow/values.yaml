@@ -1,0 +1,119 @@
+executor: KubernetesExecutor
+
+images:
+  airflow:
+    repository: ghcr.io/beolle/airflow-custom
+    tag: oracle-keepalive
+    pullPolicy: Always
+  pod_template:
+    repository: ghcr.io/beolle/airflow-custom
+    tag: oracle-keepalive
+    pullPolicy: Always
+
+imagePullSecrets:
+  - name: ghcr-pull-secret
+
+data:
+  metadataSecretName: airflow-metadata
+
+fernetKeySecretName: airflow-fernet-key
+apiSecretKeySecretName: airflow-api-secret-key
+jwtSecretName: airflow-jwt-secret
+
+config:
+  kubernetes_executor:
+    delete_worker_pods: "True"
+
+apiServer:
+  service:
+    type: NodePort
+    ports:
+      - name: airflow-ui
+        port: 8080
+        nodePort: 30080
+  extraVolumes:
+    - name: oracle-wallet
+      secret:
+        secretName: oracle-wallet
+  extraVolumeMounts:
+    - name: oracle-wallet
+      mountPath: /opt/airflow/wallet
+      readOnly: true
+
+scheduler:
+  extraVolumes:
+    - name: oracle-wallet
+      secret:
+        secretName: oracle-wallet
+  extraVolumeMounts:
+    - name: oracle-wallet
+      mountPath: /opt/airflow/wallet
+      readOnly: true
+
+dagProcessor:
+  extraVolumes:
+    - name: oracle-wallet
+      secret:
+        secretName: oracle-wallet
+  extraVolumeMounts:
+    - name: oracle-wallet
+      mountPath: /opt/airflow/wallet
+      readOnly: true
+
+triggerer:
+  extraVolumes:
+    - name: oracle-wallet
+      secret:
+        secretName: oracle-wallet
+  extraVolumeMounts:
+    - name: oracle-wallet
+      mountPath: /opt/airflow/wallet
+      readOnly: true
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: false
+
+env:
+  - name: AIRFLOW__CORE__LOAD_EXAMPLES
+    value: "false"
+  - name: PIP_CONSTRAINT
+    value: https://raw.githubusercontent.com/apache/airflow/constraints-3.1.7/constraints-3.12.txt
+  - name: ORACLE_WALLET_PATH
+    value: /opt/airflow/wallet
+
+extraEnvFrom: |
+  - secretRef:
+      name: sqld-oracle-keepalive-secret
+
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: true
+    repo: git@github.com:BeolLe/airflow-practice.git
+    branch: main
+    rev: HEAD
+    depth: 1
+    maxFailures: 0
+    subPath: ""
+    sshKeySecret: airflow-git-secret
+    wait: 60
+
+logs:
+  persistence:
+    enabled: true
+    size: 10Gi
+
+workers:
+  replicas: 0
+  extraVolumes:
+    - name: oracle-wallet
+      secret:
+        secretName: oracle-wallet
+  extraVolumeMounts:
+    - name: oracle-wallet
+      mountPath: /opt/airflow/wallet
+      readOnly: true
