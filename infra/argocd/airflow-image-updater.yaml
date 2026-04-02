@@ -1,0 +1,22 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: airflow-updater
+  namespace: argocd
+spec:
+  namespace: argocd
+  commonUpdateSettings:
+    forceUpdate: false
+    updateStrategy: digest
+  applicationRefs:
+    - namePattern: airflow
+      useAnnotations: false
+      images:
+        - alias: airflow
+          imageName: ghcr.io/beolle/sqld-airflow:latest
+      writeBackConfig:
+        method: git:secret:argocd/ghcr-creds
+        gitConfig:
+          repository: https://github.com/BeolLe/sqld_project_gitops
+          branch: main
+          writeBackTarget: helmvalues:/infra/airflow/values.yaml
