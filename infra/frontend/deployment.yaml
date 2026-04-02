@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqld-frontend
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqld-frontend
+  template:
+    metadata:
+      labels:
+        app: sqld-frontend
+    spec:
+      containers:
+        - name: sqld-frontend
+          image: ghcr.io/beolle/sqld-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

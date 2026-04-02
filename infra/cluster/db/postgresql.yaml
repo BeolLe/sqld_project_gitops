@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pg-archive-postgresql
+  namespace: db  # 이삿짐 풀 곳
+  labels:
+    app: postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgresql
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pg-archive-postgresql
+  namespace: db
+spec:
+  serviceName: "pg-archive-postgresql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres:15 # 안정적인 15버전 추천
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "ronnygustjr12" # 형님 기존 비번과 맞췄습니다.
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates: # 이게 있어야 포드가 죽어도 데이터가 안 날아갑니다.
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "manual" # 형님 서버에서 쓰고 계신 스토리지 클래스
+      resources:
+        requests:
+          storage: 250Gi # 용량은 형님 필요에 따라 조절하세요.

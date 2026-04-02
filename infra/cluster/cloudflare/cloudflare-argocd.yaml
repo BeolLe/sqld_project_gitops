@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-argocd
+  namespace: infra
+  labels:
+    app: cloudflared
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+      - name: cloudflared-argocd
+        image: cloudflare/cloudflared:latest
+        args:
+        - tunnel
+        # - --config
+        # - /etc/cloudflared/config.yml
+        - run
+        env:
+        - name: TUNNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: tunnel-credentials
+              key: argo-tunnel-token
+ 

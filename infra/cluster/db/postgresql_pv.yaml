@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgre-pv
+spec:
+  capacity:
+    storage: 250Gi  # PVC 요구사항(250Gi)과 반드시 일치해야 함
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: "/mnt/data/ronny-project/k8s-db-pipeline/pvc-7aa49006-bc07-49e2-bb07-1dfce0e2b81d_pipeline_data-airflow-postgresql-0"
+  claimRef:
+    namespace: db
+    name: postgres-data-pg-archive-postgresql-0

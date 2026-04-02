@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: private-dns-coredns
+  namespace: infra
+data:
+  Corefile: |
+    .:53 {
+        errors
+        log
+        health
+        ready
+
+        hosts {
+            192.168.215.240 grafana.int.selfronny.com
+            192.168.215.240 prom.int.selfronny.com
+            192.168.215.240 argocd.int.selfronny.com
+            192.168.215.240 airflow.int.selfronny.com
+            fallthrough
+        }
+
+        forward . 1.1.1.1 8.8.8.8
+        cache 30
+        reload
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: private-dns-coredns
+  namespace: infra
+  labels:
+    app: private-dns-coredns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: private-dns-coredns
+  template:
+    metadata:
+      labels:
+        app: private-dns-coredns
+    spec:
+      containers:
+        - name: coredns
+          image: coredns/coredns:1.12.1
+          args:
+            - -conf
+            - /etc/coredns/Corefile
+          ports:
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: metrics
+              containerPort: 9153
+              protocol: TCP
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/coredns
+          resources:
+            requests:
+              cpu: 50m
+              memory: 70Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8181
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config-volume
+          configMap:
+            name: private-dns-coredns
+            items:
+              - key: Corefile
+                path: Corefile
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: private-dns-coredns
+  namespace: infra
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.215.241
+  selector:
+    app: private-dns-coredns
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+    - name: metrics
+      port: 9153
+      targetPort: 9153
+      protocol: TCP

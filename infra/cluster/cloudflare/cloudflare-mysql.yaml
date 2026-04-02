@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-mysql
+  namespace: infra
+  labels:
+    app: cloudflared-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared-mysql
+  template:
+    metadata:
+      labels:
+        app: cloudflared-mysql
+    spec:
+      containers:
+      - name: cloudflared
+        image: cloudflare/cloudflared:latest
+        args:
+        - tunnel
+        - --no-autoupdate
+        - run
+        - --token
+        - "eyJhIjoiZjcxN2MwMjllYThlNzM3MmM2MDRmMzM2OGVmZjA2OTkiLCJ0IjoiMjI2N2I4NzItMGE5YS00MTFjLTlhM2YtNTg0YjI4ZmNhNDc0IiwicyI6Ik5UbG1OamhqTVRNdE5qRTVPUzAwTm1OaUxUaGxOMkl0TTJWaFpUSmhNV0V4TW1GbSJ9"
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+          requests:
+            cpu: "50m"
+            memory: "64Mi"

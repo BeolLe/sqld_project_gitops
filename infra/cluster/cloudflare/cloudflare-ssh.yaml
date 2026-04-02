@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-ssh
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared-ssh
+  template:
+    metadata:
+      labels:
+        app: cloudflared-ssh
+    spec:
+      hostNetwork: true
+      containers:
+      # 1번: 외부와 통신하는 통로 (Secret 참조 방식 적용)
+      - name: cloudflared
+        image: cloudflare/cloudflared:latest
+        args:
+        - tunnel
+        - run
+        env:
+        - name: TUNNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: tunnel-credentials
+              key: ssh-tunnel-token

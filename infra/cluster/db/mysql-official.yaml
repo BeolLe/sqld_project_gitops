@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-mart
+  namespace: db
+  labels:
+    app: mysql-mart
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    name: mysql
+    targetPort: 3306
+  selector:
+    app: mysql-mart
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-mart
+  namespace: db
+spec:
+  selector:
+    matchLabels:
+      app: mysql-mart
+  serviceName: "mysql-mart"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql-mart
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "ronnygustjr12"
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-persistent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-path"
+      resources:
+        requests:
+          storage: 150Gi

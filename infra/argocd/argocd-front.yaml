@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: front-k8s
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/BeolLe/sqld_project
+    targetRevision: main
+    path: infra/frontend
+    kustomize: {}
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

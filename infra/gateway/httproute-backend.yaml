@@ -1,0 +1,17 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sqld-backend-route
+  namespace: app
+spec:
+  parentRefs:
+    - name: sqld-gateway
+      namespace: app
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: sqld-backend
+          port: 8000

@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: back-k8s
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/beolle/sqld-backend
+    argocd-image-updater.argoproj.io/backend.update-strategy: digest
+    argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^latest$
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/BeolLe/sqld_project
+    targetRevision: main
+    path: infra/backend
+    kustomize: {}
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

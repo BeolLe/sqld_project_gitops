@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-postgres
+  namespace: infra
+  labels:
+    app: cloudflared-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared-postgres
+  template:
+    metadata:
+      labels:
+        app: cloudflared-postgres
+    spec:
+      containers:
+      - name: cloudflared-postgres
+        image: cloudflare/cloudflared:latest
+        args:
+        - tunnel
+        - run
+        env:
+        - name: TUNNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: tunnel-credentials
+              key: postgres-tunnel-token # 형님, 이 부분은 Secret에 등록할 Postgres용 키 이름에 맞춰 수정하십시오.

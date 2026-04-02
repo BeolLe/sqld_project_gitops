@@ -1,0 +1,20 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: back-k8s-updater
+  namespace: argocd
+spec:
+  namespace: argocd
+  commonUpdateSettings:
+    forceUpdate: false
+    updateStrategy: digest
+  applicationRefs:
+    - namePattern: back-k8s
+      useAnnotations: false
+      images:
+        - alias: backend
+          imageName: ghcr.io/beolle/sqld-backend:latest
+      writeBackConfig:
+        method: git:secret:argocd/ghcr-creds
+        gitConfig:
+          branch: main

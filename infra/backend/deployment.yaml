@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqld-backend
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqld-backend
+  template:
+    metadata:
+      labels:
+        app: sqld-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/beolle/sqld-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: oracle-db-secret
+            - secretRef:
+                name: postgres-db-secret
+          env:
+            - name: ORACLE_WALLET_PATH
+              value: /app/wallet
+          volumeMounts:
+            - name: oracle-wallet
+              mountPath: /app/wallet
+              readOnly: true
+      volumes:
+        - name: oracle-wallet
+          secret:
+            secretName: oracle-wallet
+      imagePullSecrets:
+        - name: ghcr-pull-secret
