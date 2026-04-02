@@ -14,6 +14,16 @@ spec:
       images:
         - alias: airflow
           imageName: ghcr.io/beolle/sqld-airflow:latest
+          manifestTargets:
+            helm:
+              name: images.airflow.repository
+              tag: images.airflow.tag
+        - alias: podtemplate
+          imageName: ghcr.io/beolle/sqld-airflow:latest
+          manifestTargets:
+            helm:
+              name: images.pod_template.repository
+              tag: images.pod_template.tag
       writeBackConfig:
         method: git:secret:argocd/ghcr-creds
         gitConfig:
