@@ -3,11 +3,11 @@ executor: KubernetesExecutor
 images:
   airflow:
     repository: ghcr.io/beolle/airflow-custom
-    tag: oracle-keepalive
+    tag: latest
     pullPolicy: Always
   pod_template:
     repository: ghcr.io/beolle/airflow-custom
-    tag: oracle-keepalive
+    tag: latest
     pullPolicy: Always
 
 imagePullSecrets:
