@@ -24,6 +24,8 @@ spec:
                 name: oracle-db-secret
             - secretRef:
                 name: postgres-db-secret
+            - secretRef:
+                name: backend-auth-secret
           env:
             - name: ORACLE_WALLET_PATH
               value: /app/wallet
