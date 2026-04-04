@@ -1,3 +1,3 @@
 kustomize:
   images:
-  - ghcr.io/beolle/sqld-frontend:latest@sha256:8c96c83545f2dca07ad77ea986a6f2217c5768b4a77f179e7fbaa51a72409844
+  - ghcr.io/beolle/sqld-frontend:latest@sha256:240655136ece0f4db1d85932d4ad6978d782a384cbe01fc8b4fc7bf3754eb0bb
