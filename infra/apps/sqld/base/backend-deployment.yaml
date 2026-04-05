@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqld-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqld-backend
+  template:
+    metadata:
+      labels:
+        app: sqld-backend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      containers:
+        - name: sqld-backend
+          image: ghcr.io/beolle/sqld-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: oracle-db-secret
+            - secretRef:
+                name: postgres-db-secret
+            - secretRef:
+                name: backend-auth-secret
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
