@@ -33,7 +33,7 @@ spec:
             - --port
             - "8000"
             - --workers
-            - "2"
+            - "4"
           ports:
             - containerPort: 8000
           env:
@@ -52,10 +52,10 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: "1"
+              cpu: "2"
               memory: 2Gi
             limits:
-              cpu: "2"
+              cpu: "4"
               memory: 8Gi
           startupProbe:
             httpGet:
