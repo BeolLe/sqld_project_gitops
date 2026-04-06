@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sqld-backend
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: sqld-backend
@@ -20,8 +20,20 @@ spec:
             secretName: oracle-wallet
       containers:
         - name: sqld-backend
-          image: ghcr.io/beolle/sqld-backend:sha-f1ed787
+          image: ghcr.io/beolle/sqld-backend:sha-770a955
           imagePullPolicy: Always
+          command:
+            - /app/.venv/bin/python
+          args:
+            - -m
+            - uvicorn
+            - app.main:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+            - --workers
+            - "2"
           ports:
             - containerPort: 8000
           env:
@@ -40,7 +52,7 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: 500m
+              cpu: "1"
               memory: 2Gi
             limits:
               cpu: "2"
