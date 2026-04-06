@@ -14,12 +14,19 @@ spec:
     spec:
       imagePullSecrets:
         - name: ghcr-pull-secret
+      volumes:
+        - name: oracle-wallet
+          secret:
+            secretName: oracle-wallet
       containers:
         - name: sqld-backend
           image: ghcr.io/beolle/sqld-backend:sha-9fbf571
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          env:
+            - name: ORACLE_WALLET_PATH
+              value: /app/wallet
           envFrom:
             - secretRef:
                 name: oracle-db-secret
@@ -27,6 +34,10 @@ spec:
                 name: postgres-db-secret
             - secretRef:
                 name: backend-auth-secret
+          volumeMounts:
+            - name: oracle-wallet
+              mountPath: /app/wallet
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /api/health
