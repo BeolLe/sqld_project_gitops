@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: app
 
 resources:
-  - airflow-route.yaml
   - cloudflared-deployment.yaml
   - gateway.yaml
   - httproute-frontend.yaml
