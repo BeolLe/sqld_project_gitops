@@ -16,7 +16,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: sqld-backend
-          image: ghcr.io/beolle/sqld-backend:latest
+          image: ghcr.io/beolle/sqld-backend:sha-f9ca688
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
