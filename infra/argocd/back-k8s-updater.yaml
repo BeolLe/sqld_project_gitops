@@ -7,13 +7,14 @@ spec:
   namespace: argocd
   commonUpdateSettings:
     forceUpdate: false
-    updateStrategy: digest
+    updateStrategy: latest
+    allowTags: regexp:^sha-
   applicationRefs:
     - namePattern: back-k8s
       useAnnotations: false
       images:
         - alias: backend
-          imageName: ghcr.io/beolle/sqld-backend:latest
+          imageName: ghcr.io/beolle/sqld-backend
       writeBackConfig:
         method: git:secret:argocd/ghcr-creds
         gitConfig:
