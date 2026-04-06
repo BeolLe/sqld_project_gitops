@@ -16,7 +16,7 @@ data:
             192.168.215.240 prom.int.selfronny.com
             192.168.215.240 argocd.int.selfronny.com
             192.168.215.240 airflow.int.selfronny.com
-            192.168.215.240 test_dummies.selfronny.com
+            192.168.215.240 test-dummies.selfronny.com
             fallthrough
         }
 

@@ -7,7 +7,7 @@ spec:
     - name: sqld-gateway
       namespace: app
   hostnames:
-    - test_dummies.selfronny.com
+    - test-dummies.selfronny.com
   rules:
     - matches:
         - path:
