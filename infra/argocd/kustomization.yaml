@@ -5,8 +5,6 @@ resources:
   - argocd-airflow.yaml
   - argocd-front.yaml
   - argocd-back.yaml
-  - argocd-sqld-internal.yaml
-  - argocd-sqld-public.yaml
   - argocd-gateway.yaml
   - airflow-image-updater.yaml
   - back-k8s-updater.yaml

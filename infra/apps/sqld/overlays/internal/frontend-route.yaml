@@ -5,7 +5,7 @@ metadata:
 spec:
   parentRefs:
     - name: sqld-gateway
-      namespace: app
+      namespace: gateway
   hostnames:
     - internal.solsqld.com
   rules:
