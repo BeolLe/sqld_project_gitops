@@ -20,7 +20,7 @@ spec:
             secretName: oracle-wallet
       containers:
         - name: sqld-backend
-          image: ghcr.io/beolle/sqld-backend:sha-97aa65d
+          image: ghcr.io/beolle/sqld-backend:sha-35f8385
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
