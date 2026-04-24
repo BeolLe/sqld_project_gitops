@@ -20,7 +20,7 @@ spec:
             secretName: oracle-wallet
       containers:
         - name: sqld-backend
-          image: ghcr.io/beolle/sqld-backend:sha-026bbcd
+          image: ghcr.io/beolle/sqld-backend:sha-ebc8413
           imagePullPolicy: Always
           command:
             - /app/.venv/bin/python
