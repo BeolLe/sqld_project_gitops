@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: analytics
+
+resources:
+  - namespace.yaml
+  - redis-deployment.yaml
+  - redis-service.yaml
+  - redash-init-job.yaml
+  - redash-server-deployment.yaml
+  - redash-server-service.yaml
+  - redash-worker-deployment.yaml
+  - redash-scheduler-deployment.yaml
+  - redash-route.yaml

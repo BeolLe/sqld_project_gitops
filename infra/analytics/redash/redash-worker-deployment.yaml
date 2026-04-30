@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redash-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redash-worker
+  template:
+    metadata:
+      labels:
+        app: redash-worker
+    spec:
+      containers:
+        - name: redash-worker
+          image: redash/redash:10.1.0.b50633
+          imagePullPolicy: IfNotPresent
+          args:
+            - worker
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "true"
+            - name: REDASH_REDIS_URL
+              value: redis://redash-redis:6379/0
+            - name: REDASH_LOG_LEVEL
+              value: INFO
+            - name: QUEUES
+              value: queries,scheduled_queries,schemas,periodic_tasks,emails,default
+          envFrom:
+            - secretRef:
+                name: redash-app-secret
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi

@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redash-db-init
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app: redash-db-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: redash-db-init
+          image: redash/redash:10.1.0.b50633
+          imagePullPolicy: IfNotPresent
+          args:
+            - create_db
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "true"
+            - name: REDASH_REDIS_URL
+              value: redis://redash-redis:6379/0
+            - name: REDASH_LOG_LEVEL
+              value: INFO
+          envFrom:
+            - secretRef:
+                name: redash-app-secret

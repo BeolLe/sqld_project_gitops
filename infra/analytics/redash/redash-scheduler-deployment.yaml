@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redash-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redash-scheduler
+  template:
+    metadata:
+      labels:
+        app: redash-scheduler
+    spec:
+      containers:
+        - name: redash-scheduler
+          image: redash/redash:10.1.0.b50633
+          imagePullPolicy: IfNotPresent
+          args:
+            - scheduler
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "true"
+            - name: REDASH_REDIS_URL
+              value: redis://redash-redis:6379/0
+            - name: REDASH_LOG_LEVEL
+              value: INFO
+          envFrom:
+            - secretRef:
+                name: redash-app-secret
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

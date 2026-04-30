@@ -1,0 +1,18 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: redash-server
+spec:
+  parentRefs:
+    - name: sqld-gateway
+      namespace: app
+  hostnames:
+    - redash.int.selfronny.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: redash-server
+          port: 5000
