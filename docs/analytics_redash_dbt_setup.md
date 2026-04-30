@@ -24,7 +24,7 @@ kubectl -n analytics create secret generic redash-app-secret \
 ```
 
 ## Redash Access
-- Public hostname: `redash.solsqld.com`
+- Public hostname: `redash.selfronny.com`
 
 ## Metadata DB
 Redash metadata DB should be separate from application tables if possible.
