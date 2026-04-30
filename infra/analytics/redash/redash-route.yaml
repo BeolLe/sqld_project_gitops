@@ -7,7 +7,7 @@ spec:
     - name: sqld-gateway
       namespace: app
   hostnames:
-    - redash.int.selfronny.com
+    - redash.solsqld.com
   rules:
     - matches:
         - path:
