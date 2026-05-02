@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sqld-frontend
-          image: ghcr.io/beolle/sqld-frontend:sha-37b858e
+          image: ghcr.io/beolle/sqld-frontend:sha-8353bd0
           imagePullPolicy: Always
           ports:
             - containerPort: 80
