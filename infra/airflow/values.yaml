@@ -31,7 +31,7 @@ apiServer:
       memory: 384Mi
     limits:
       cpu: "1"
-      memory: 768Mi
+      memory: 1Gi
   extraVolumes:
   - name: oracle-wallet
     secret:
@@ -43,11 +43,11 @@ apiServer:
 scheduler:
   resources:
     requests:
-      cpu: 300m
-      memory: 512Mi
+      cpu: 500m
+      memory: 768Mi
     limits:
-      cpu: "1"
-      memory: 1Gi
+      cpu: "2"
+      memory: 2Gi
   extraVolumes:
   - name: oracle-wallet
     secret:
@@ -59,11 +59,11 @@ scheduler:
 dagProcessor:
   resources:
     requests:
-      cpu: 300m
-      memory: 512Mi
+      cpu: 500m
+      memory: 768Mi
     limits:
-      cpu: "1"
-      memory: 1Gi
+      cpu: "2"
+      memory: 2Gi
   extraVolumes:
   - name: oracle-wallet
     secret:
@@ -79,7 +79,7 @@ triggerer:
       memory: 384Mi
     limits:
       cpu: "1"
-      memory: 768Mi
+      memory: 1Gi
   extraVolumes:
   - name: oracle-wallet
     secret:
