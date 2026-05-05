@@ -25,6 +25,13 @@ apiServer:
     - name: airflow-ui
       port: 8080
       nodePort: 30080
+  resources:
+    requests:
+      cpu: 200m
+      memory: 384Mi
+    limits:
+      cpu: "1"
+      memory: 768Mi
   extraVolumes:
   - name: oracle-wallet
     secret:
@@ -34,6 +41,13 @@ apiServer:
     mountPath: /opt/airflow/wallet
     readOnly: true
 scheduler:
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
   extraVolumes:
   - name: oracle-wallet
     secret:
@@ -43,6 +57,13 @@ scheduler:
     mountPath: /opt/airflow/wallet
     readOnly: true
 dagProcessor:
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
   extraVolumes:
   - name: oracle-wallet
     secret:
@@ -52,6 +73,13 @@ dagProcessor:
     mountPath: /opt/airflow/wallet
     readOnly: true
 triggerer:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 384Mi
+    limits:
+      cpu: "1"
+      memory: 768Mi
   extraVolumes:
   - name: oracle-wallet
     secret:

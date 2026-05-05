@@ -52,11 +52,11 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: "1"
-              memory: 2Gi
+              cpu: 500m
+              memory: 1Gi
             limits:
-              cpu: "4"
-              memory: 8Gi
+              cpu: "2"
+              memory: 3Gi
           startupProbe:
             httpGet:
               path: /api/health
