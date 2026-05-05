@@ -61,6 +61,13 @@ data:
             return json.load(response)
 
 
+    def http_text(url: str, *, data: bytes | None = None) -> str:
+        request = Request(url, data=data)
+        request.add_header("Content-Type", "application/json")
+        with urlopen(request, timeout=30) as response:
+            return response.read().decode("utf-8").strip()
+
+
     def query_range(query: str, start: datetime, end: datetime, step: str) -> list[dict]:
         params = urlencode(
             {
@@ -113,7 +120,9 @@ data:
 
     def send_to_slack(text: str) -> None:
         payload = json.dumps({"text": text}).encode("utf-8")
-        http_json(SLACK_WEBHOOK_URL, data=payload)
+        response_text = http_text(SLACK_WEBHOOK_URL, data=payload)
+        if response_text not in {"", "ok"}:
+            raise RuntimeError(f"Unexpected Slack webhook response: {response_text}")
 
 
     def instance_sort_key(instance: str) -> tuple[str, int]:
