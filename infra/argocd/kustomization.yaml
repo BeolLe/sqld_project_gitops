@@ -11,3 +11,4 @@ resources:
   - back-k8s-updater.yaml
   - front-image-updater.yaml
   - argocd-image-updater-config.yaml
+  - argocd-monitoring-alerts.yaml

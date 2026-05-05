@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: monitoring-daily-report
+  namespace: monitoring
+spec:
+  schedule: "0 0 * * *"
+  timeZone: "Asia/Seoul"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 1800
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 600
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: reporter
+              image: python:3.11-slim
+              imagePullPolicy: IfNotPresent
+              command:
+                - python
+                - /scripts/daily_report.py
+              env:
+                - name: PROMETHEUS_URL
+                  value: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+                - name: REPORT_TIMEZONE
+                  value: Asia/Seoul
+                - name: PROM_STEP
+                  value: 5m
+                - name: SLACK_WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: alertmanager-slack-webhook
+                      key: url
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+              resources:
+                requests:
+                  cpu: 20m
+                  memory: 64Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+          volumes:
+            - name: script
+              configMap:
+                name: monitoring-daily-report-script
+                defaultMode: 0555

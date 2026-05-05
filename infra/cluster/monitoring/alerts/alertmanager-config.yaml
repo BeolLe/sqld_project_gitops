@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1beta1
+kind: AlertmanagerConfig
+metadata:
+  name: infrastructure-slack
+  namespace: monitoring
+spec:
+  route:
+    groupBy:
+      - alertname
+      - instance
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 2h
+    receiver: slack-infra
+    matchers:
+      - name: category
+        value: infrastructure
+  receivers:
+    - name: slack-infra
+      slackConfigs:
+        - apiURL:
+            name: alertmanager-slack-webhook
+            key: url
+          channel: "#server-alerts"
+          sendResolved: true
+          title: "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}"
+          text: |
+            {{ range .Alerts -}}
+            *인스턴스:* {{ .Labels.instance }}
+            *요약:* {{ .Annotations.summary }}
+            *상세:* {{ .Annotations.description }}
+            {{ end }}

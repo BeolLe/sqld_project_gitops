@@ -1,0 +1,60 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: infrastructure-resource-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: infrastructure-resource-alerts
+      rules:
+        - alert: NodeCpuUsageHigh
+          expr: 100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 85
+          for: 10m
+          labels:
+            severity: warning
+            category: infrastructure
+          annotations:
+            summary: "CPU 사용률 높음"
+            description: '{{ $labels.instance }} CPU 사용률이 10분 이상 {{ printf "%.1f" $value }}% 입니다.'
+
+        - alert: NodeMemoryUsageHigh
+          expr: 100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 85
+          for: 10m
+          labels:
+            severity: warning
+            category: infrastructure
+          annotations:
+            summary: "메모리 사용률 높음"
+            description: '{{ $labels.instance }} 메모리 사용률이 10분 이상 {{ printf "%.1f" $value }}% 입니다.'
+
+        - alert: RootDiskUsageHigh
+          expr: 100 * (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype=~"ext4|xfs"} / node_filesystem_size_bytes{mountpoint="/",fstype=~"ext4|xfs"})) > 85
+          for: 15m
+          labels:
+            severity: warning
+            category: infrastructure
+          annotations:
+            summary: "루트 디스크 사용률 높음"
+            description: '{{ $labels.instance }} 루트 디스크 사용률이 15분 이상 {{ printf "%.1f" $value }}% 입니다.'
+
+        - alert: ProjectDiskUsageHigh
+          expr: 100 * (1 - (node_filesystem_avail_bytes{mountpoint="/mnt/data",fstype=~"ext4|xfs"} / node_filesystem_size_bytes{mountpoint="/mnt/data",fstype=~"ext4|xfs"})) > 85
+          for: 15m
+          labels:
+            severity: warning
+            category: infrastructure
+          annotations:
+            summary: "프로젝트 SSD 사용률 높음"
+            description: '{{ $labels.instance }} /mnt/data 사용률이 15분 이상 {{ printf "%.1f" $value }}% 입니다.'
+
+        - alert: NodeNetworkUsageHigh
+          expr: ((sum by (instance) (rate(node_network_receive_bytes_total[5m]))) + (sum by (instance) (rate(node_network_transmit_bytes_total[5m])))) * 8 / 1000 / 1000 > 200
+          for: 10m
+          labels:
+            severity: warning
+            category: infrastructure
+          annotations:
+            summary: "네트워크 사용량 높음"
+            description: '{{ $labels.instance }} 총 네트워크 사용량이 10분 이상 {{ printf "%.1f" $value }} Mbps 입니다.'

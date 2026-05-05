@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monitoring-daily-report-script
+  namespace: monitoring
+data:
+  daily_report.py: |
+    from __future__ import annotations
+
+    import json
+    import os
+    from collections import defaultdict
+    from datetime import UTC, datetime, time, timedelta
+    from statistics import fmean
+    from urllib.error import HTTPError, URLError
+    from urllib.parse import urlencode
+    from urllib.request import Request, urlopen
+    from zoneinfo import ZoneInfo
+
+    PROMETHEUS_URL = os.environ.get(
+        "PROMETHEUS_URL",
+        "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090",
+    ).rstrip("/")
+    SLACK_WEBHOOK_URL = os.environ["SLACK_WEBHOOK_URL"]
+    TIMEZONE = ZoneInfo(os.environ.get("REPORT_TIMEZONE", "Asia/Seoul"))
+    STEP = os.environ.get("PROM_STEP", "5m")
+
+    QUERIES = {
+        "cpu": {
+            "label": "CPU",
+            "unit": "%",
+            "query": '100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])))',
+        },
+        "memory": {
+            "label": "Memory",
+            "unit": "%",
+            "query": '100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))',
+        },
+        "root_disk": {
+            "label": "Root Disk",
+            "unit": "%",
+            "query": '100 * (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype=~"ext4|xfs"} / node_filesystem_size_bytes{mountpoint="/",fstype=~"ext4|xfs"}))',
+        },
+        "project_disk": {
+            "label": "Project SSD (/mnt/data)",
+            "unit": "%",
+            "query": '100 * (1 - (node_filesystem_avail_bytes{mountpoint="/mnt/data",fstype=~"ext4|xfs"} / node_filesystem_size_bytes{mountpoint="/mnt/data",fstype=~"ext4|xfs"}))',
+        },
+        "network": {
+            "label": "Network Total",
+            "unit": "Mbps",
+            "query": '((sum by (instance) (rate(node_network_receive_bytes_total{device!~"lo|cali.*|veth.*|cni.*|flannel.*|kube-ipvs0|vxlan.*|tunl.*"}[5m]))) + (sum by (instance) (rate(node_network_transmit_bytes_total{device!~"lo|cali.*|veth.*|cni.*|flannel.*|kube-ipvs0|vxlan.*|tunl.*"}[5m])))) * 8 / 1000 / 1000',
+        },
+    }
+
+
+    def http_json(url: str, *, data: bytes | None = None) -> dict:
+        request = Request(url, data=data)
+        request.add_header("Content-Type", "application/json")
+        with urlopen(request, timeout=30) as response:
+            return json.load(response)
+
+
+    def query_range(query: str, start: datetime, end: datetime, step: str) -> list[dict]:
+        params = urlencode(
+            {
+                "query": query,
+                "start": start.astimezone(UTC).isoformat().replace("+00:00", "Z"),
+                "end": end.astimezone(UTC).isoformat().replace("+00:00", "Z"),
+                "step": step,
+            }
+        )
+        payload = http_json(f"{PROMETHEUS_URL}/api/v1/query_range?{params}")
+        if payload.get("status") != "success":
+            raise RuntimeError(f"Prometheus query failed: {payload}")
+        return payload["data"]["result"]
+
+
+    def summarize_range(series: list[dict]) -> dict[str, list[float]]:
+        summary: dict[str, list[float]] = defaultdict(list)
+        for item in series:
+            labels = item.get("metric", {})
+            instance = labels.get("instance") or labels.get("node") or "unknown"
+            for _, raw_value in item.get("values", []):
+                try:
+                    summary[instance].append(float(raw_value))
+                except ValueError:
+                    continue
+        return summary
+
+
+    def format_stat(values: list[float], unit: str) -> str:
+        if not values:
+            return "n/a"
+        avg = fmean(values)
+        peak = max(values)
+        return f"avg {avg:.1f}{unit} / peak {peak:.1f}{unit}"
+
+
+    def build_message(report_day: datetime, report: dict[str, dict[str, str]]) -> str:
+        lines = [
+            f"*서버 일일 사용량 리포트* ({report_day.strftime('%Y-%m-%d')}, KST)",
+            "",
+        ]
+        for instance in sorted(report, key=instance_sort_key):
+            lines.append(f"*{instance}*")
+            metrics = report[instance]
+            for key in ["cpu", "memory", "root_disk", "project_disk", "network"]:
+                lines.append(f"- {QUERIES[key]['label']}: {metrics.get(key, 'n/a')}")
+            lines.append("")
+        return "\n".join(lines).strip()
+
+
+    def send_to_slack(text: str) -> None:
+        payload = json.dumps({"text": text}).encode("utf-8")
+        http_json(SLACK_WEBHOOK_URL, data=payload)
+
+
+    def instance_sort_key(instance: str) -> tuple[str, int]:
+        host, _, port = instance.partition(":")
+        try:
+            return host, int(port or 0)
+        except ValueError:
+            return host, 0
+
+
+    def main() -> None:
+        now = datetime.now(TIMEZONE)
+        report_day = (now - timedelta(days=1)).date()
+        start = datetime.combine(report_day, time.min, TIMEZONE)
+        end = datetime.combine(report_day + timedelta(days=1), time.min, TIMEZONE)
+
+        report: dict[str, dict[str, str]] = defaultdict(dict)
+
+        for key, config in QUERIES.items():
+            result = query_range(config["query"], start, end, STEP)
+            grouped = summarize_range(result)
+            for instance, values in grouped.items():
+                report[instance][key] = format_stat(values, config["unit"])
+
+        if not report:
+            raise RuntimeError("No metrics returned from Prometheus")
+
+        send_to_slack(build_message(start, report))
+
+
+    if __name__ == "__main__":
+        try:
+            main()
+        except (HTTPError, URLError, RuntimeError, KeyError) as exc:
+            error_text = f"서버 일일 사용량 리포트 전송 실패: {exc}"
+            send_to_slack(error_text)
+            raise
