@@ -2,11 +2,11 @@ executor: KubernetesExecutor
 images:
   airflow:
     repository: ghcr.io/beolle/sqld-airflow
-    tag: latest@sha256:bdbe5eeca97632bb0851b0cc633bd382142d64df2db93365fe216410a09e97cf
+    tag: latest@sha256:8d78773a4c30e2cddf36b66b8f54978314ac6a9586094201a46bffcd0f63ebbe
     pullPolicy: Always
   pod_template:
     repository: ghcr.io/beolle/sqld-airflow
-    tag: latest@sha256:bdbe5eeca97632bb0851b0cc633bd382142d64df2db93365fe216410a09e97cf
+    tag: latest@sha256:8d78773a4c30e2cddf36b66b8f54978314ac6a9586094201a46bffcd0f63ebbe
     pullPolicy: Always
 imagePullSecrets:
 - name: ghcr-pull-secret
