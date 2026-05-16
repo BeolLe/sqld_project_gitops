@@ -1,3 +1,7 @@
-FROM ghcr.io/dbt-labs/dbt-core:1.10.13
+FROM python:3.12-slim
 
-RUN python -m pip install --no-cache-dir "dbt-postgres==1.10.0"
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+RUN python -m pip install --upgrade pip && \
+    python -m pip install "dbt-postgres==1.10.0"
