@@ -25,6 +25,10 @@ spec:
               value: redis://redash-redis:6379/0
             - name: REDASH_LOG_LEVEL
               value: INFO
+            - name: REDASH_SCHEMAS_REFRESH_SCHEDULE
+              value: "30"
+            - name: REDASH_SCHEMAS_REFRESH_TIMEOUT
+              value: "300"
             - name: QUEUES
               value: queries,scheduled_queries,schemas,periodic_tasks,emails,default
           envFrom:
