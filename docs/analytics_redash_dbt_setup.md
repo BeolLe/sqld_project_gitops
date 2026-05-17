@@ -38,7 +38,7 @@ Inside Redash, add the SolSQLD PostgreSQL database as a data source with a read-
 
 Recommended access:
 - Read-only user
-- Limit to analytics-facing schemas such as `raw`, `stg`, `mart`
+- Grant visibility only to dbt-facing analytics schemas such as `brz`, `siv`, `gold`
 
 ## dbt Execution Direction
 `dbt` project code should live in the private Airflow repo.
@@ -46,13 +46,14 @@ Recommended access:
 Recommended flow:
 1. Application data accumulates in PostgreSQL
 2. Airflow runs `dbt run` and `dbt test`
-3. `dbt` writes analytics models into `mart`
-4. Redash reads `mart`
+3. `dbt` writes Bronze models into `brz`
+4. Later transformations can populate `siv` and `gold`
+5. Redash reads the dbt-built analytics schemas
 
 ## Recommended Schema Split
-- `raw`
-- `stg`
-- `mart`
+- `brz`
+- `siv`
+- `gold`
 
 ## Notes
 - `dbt` is not deployed here as an always-on service
