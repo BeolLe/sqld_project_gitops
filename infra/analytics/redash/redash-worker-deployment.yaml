@@ -30,7 +30,7 @@ spec:
             - name: REDASH_SCHEMAS_REFRESH_TIMEOUT
               value: "300"
             - name: QUEUES
-              value: queries,scheduled_queries,schemas,periodic_tasks,emails,default
+              value: queries,scheduled_queries,schemas,periodic,emails,default
           envFrom:
             - secretRef:
                 name: redash-app-secret
