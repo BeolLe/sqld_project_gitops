@@ -18,6 +18,7 @@ spec:
           annotations:
             summary: "CPU 사용률 높음"
             description: '{{ $labels.instance }} CPU 사용률이 10분 이상 {{ printf "%.1f" $value }}% 입니다.'
+            temperature: '{{ with printf "max by (instance) (node_hwmon_temp_celsius{instance=\"%s\"})" $labels.instance | query }}{{ printf "%.1f°C" (. | first | value) }}{{ else }}N/A{{ end }}'
 
         - alert: NodeMemoryUsageHigh
           expr: 100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 85
@@ -28,6 +29,7 @@ spec:
           annotations:
             summary: "메모리 사용률 높음"
             description: '{{ $labels.instance }} 메모리 사용률이 10분 이상 {{ printf "%.1f" $value }}% 입니다.'
+            temperature: '{{ with printf "max by (instance) (node_hwmon_temp_celsius{instance=\"%s\"})" $labels.instance | query }}{{ printf "%.1f°C" (. | first | value) }}{{ else }}N/A{{ end }}'
 
         - alert: RootDiskUsageHigh
           expr: 100 * (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype=~"ext4|xfs"} / node_filesystem_size_bytes{mountpoint="/",fstype=~"ext4|xfs"})) > 85
@@ -38,6 +40,7 @@ spec:
           annotations:
             summary: "루트 디스크 사용률 높음"
             description: '{{ $labels.instance }} 루트 디스크 사용률이 15분 이상 {{ printf "%.1f" $value }}% 입니다.'
+            temperature: '{{ with printf "max by (instance) (node_hwmon_temp_celsius{instance=\"%s\"})" $labels.instance | query }}{{ printf "%.1f°C" (. | first | value) }}{{ else }}N/A{{ end }}'
 
         - alert: ProjectDiskUsageHigh
           expr: 100 * (1 - (node_filesystem_avail_bytes{mountpoint="/mnt/data",fstype=~"ext4|xfs"} / node_filesystem_size_bytes{mountpoint="/mnt/data",fstype=~"ext4|xfs"})) > 85
@@ -48,6 +51,7 @@ spec:
           annotations:
             summary: "프로젝트 SSD 사용률 높음"
             description: '{{ $labels.instance }} /mnt/data 사용률이 15분 이상 {{ printf "%.1f" $value }}% 입니다.'
+            temperature: '{{ with printf "max by (instance) (node_hwmon_temp_celsius{instance=\"%s\"})" $labels.instance | query }}{{ printf "%.1f°C" (. | first | value) }}{{ else }}N/A{{ end }}'
 
         - alert: NodeNetworkUsageHigh
           expr: ((sum by (instance) (rate(node_network_receive_bytes_total[5m]))) + (sum by (instance) (rate(node_network_transmit_bytes_total[5m])))) * 8 / 1000 / 1000 > 200
@@ -58,3 +62,4 @@ spec:
           annotations:
             summary: "네트워크 사용량 높음"
             description: '{{ $labels.instance }} 총 네트워크 사용량이 10분 이상 {{ printf "%.1f" $value }} Mbps 입니다.'
+            temperature: '{{ with printf "max by (instance) (node_hwmon_temp_celsius{instance=\"%s\"})" $labels.instance | query }}{{ printf "%.1f°C" (. | first | value) }}{{ else }}N/A{{ end }}'

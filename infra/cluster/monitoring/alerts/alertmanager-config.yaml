@@ -29,4 +29,7 @@ spec:
             *인스턴스:* {{ .Labels.instance }}
             *요약:* {{ .Annotations.summary }}
             *상세:* {{ .Annotations.description }}
+            {{- if .Annotations.temperature }}
+            *온도:* {{ .Annotations.temperature }}
+            {{- end }}
             {{ end }}
