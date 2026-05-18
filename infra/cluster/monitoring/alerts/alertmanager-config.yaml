@@ -32,4 +32,8 @@ spec:
             {{- if .Annotations.temperature }}
             *온도:* {{ .Annotations.temperature }}
             {{- end }}
+            {{- if .Annotations.fan_speed }}
+            *팬 속도:* {{ .Annotations.fan_speed }}
+            {{- end }}
+            *대시보드:* <http://grafana.int.selfronny.com/d/rot824t/server-usage?orgId=1&from=now-6h&to=now&timezone=browser&refresh=auto|Server Usage Grafana>
             {{ end }}
