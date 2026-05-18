@@ -51,6 +51,21 @@ data:
             "unit": "Mbps",
             "query": '((sum by (instance) (rate(node_network_receive_bytes_total{device!~"lo|cali.*|veth.*|cni.*|flannel.*|kube-ipvs0|vxlan.*|tunl.*"}[5m]))) + (sum by (instance) (rate(node_network_transmit_bytes_total{device!~"lo|cali.*|veth.*|cni.*|flannel.*|kube-ipvs0|vxlan.*|tunl.*"}[5m])))) * 8 / 1000 / 1000',
         },
+        "temperature": {
+            "label": "Temperature",
+            "unit": "°C",
+            "query": 'max by (instance) (node_hwmon_temp_celsius)',
+        },
+        "fan1": {
+            "label": "Fan 1",
+            "unit": " RPM",
+            "query": 'node_hwmon_fan_rpm{sensor="fan1"}',
+        },
+        "fan2": {
+            "label": "Fan 2",
+            "unit": " RPM",
+            "query": 'node_hwmon_fan_rpm{sensor="fan2"}',
+        },
     }
 
 
@@ -112,7 +127,7 @@ data:
         for instance in sorted(report, key=instance_sort_key):
             lines.append(f"*{instance}*")
             metrics = report[instance]
-            for key in ["cpu", "memory", "root_disk", "project_disk", "network"]:
+            for key in ["cpu", "memory", "root_disk", "project_disk", "network", "temperature", "fan1", "fan2"]:
                 lines.append(f"- {QUERIES[key]['label']}: {metrics.get(key, 'n/a')}")
             lines.append("")
         return "\n".join(lines).strip()
