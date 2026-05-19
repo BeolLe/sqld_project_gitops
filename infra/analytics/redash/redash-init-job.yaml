@@ -2,8 +2,11 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: redash-db-init
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
 spec:
-  ttlSecondsAfterFinished: 300
+  backoffLimit: 1
   template:
     metadata:
       labels:
