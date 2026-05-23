@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/beolle/sqld-backend:7018f89
+          image: ghcr.io/beolle/sqld-backend:e5e8d22
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
