@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sqld-backend
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app: sqld-backend
@@ -33,7 +33,7 @@ spec:
             - --port
             - "8000"
             - --workers
-            - "4"
+            - "2"
           ports:
             - containerPort: 8000
           env:
