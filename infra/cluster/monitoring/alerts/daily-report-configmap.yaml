@@ -67,6 +67,7 @@ data:
             "query": 'node_hwmon_fan_rpm{sensor="fan2"}',
         },
     }
+    DISK_KEYS = {"root_disk", "project_disk"}
 
 
     def http_json(url: str, *, data: bytes | None = None) -> dict:
@@ -119,6 +120,19 @@ data:
         return f"avg {avg:.1f}{unit} / peak {peak:.1f}{unit}"
 
 
+    def format_start_end(values: list[float], unit: str) -> str:
+        if not values:
+            return "n/a"
+        start = values[0]
+        end = values[-1]
+        delta = end - start
+        delta_unit = "pp" if unit == "%" else unit
+        return (
+            f"start {start:.1f}{unit} -> end {end:.1f}{unit} "
+            f"({delta:+.1f}{delta_unit})"
+        )
+
+
     def build_message(report_day: datetime, report: dict[str, dict[str, str]]) -> str:
         lines = [
             f"*서버 일일 사용량 리포트* ({report_day.strftime('%Y-%m-%d')}, KST)",
@@ -160,7 +174,10 @@ data:
             result = query_range(config["query"], start, end, STEP)
             grouped = summarize_range(result)
             for instance, values in grouped.items():
-                report[instance][key] = format_stat(values, config["unit"])
+                if key in DISK_KEYS:
+                    report[instance][key] = format_start_end(values, config["unit"])
+                else:
+                    report[instance][key] = format_stat(values, config["unit"])
 
         if not report:
             raise RuntimeError("No metrics returned from Prometheus")
