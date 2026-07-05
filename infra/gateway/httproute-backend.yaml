@@ -15,3 +15,5 @@ spec:
       backendRefs:
         - name: sqld-backend
           port: 8000
+      timeouts:
+        request: 75s

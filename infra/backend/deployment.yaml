@@ -26,6 +26,9 @@ spec:
                 name: postgres-db-secret
             - secretRef:
                 name: backend-auth-secret
+            - secretRef:
+                name: sqld-ai-provider-secret
+                optional: true
           env:
             - name: ORACLE_WALLET_PATH
               value: /app/wallet
