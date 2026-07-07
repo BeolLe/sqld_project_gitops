@@ -20,7 +20,7 @@ spec:
             secretName: oracle-wallet
       containers:
         - name: sqld-backend
-          image: ghcr.io/beolle/sqld-backend:sha-7f5be3e
+          image: ghcr.io/beolle/sqld-backend:sha-761fd38
           imagePullPolicy: Always
           command:
             - /app/.venv/bin/python
@@ -46,6 +46,9 @@ spec:
                 name: postgres-db-secret
             - secretRef:
                 name: backend-auth-secret
+            - secretRef:
+                name: sqld-ai-provider-secret
+                optional: true
           volumeMounts:
             - name: oracle-wallet
               mountPath: /app/wallet

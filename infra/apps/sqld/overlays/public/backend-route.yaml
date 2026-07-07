@@ -15,7 +15,7 @@ spec:
             type: PathPrefix
             value: /api
       timeouts:
-        request: 60s
+        request: 75s
       backendRefs:
         - name: sqld-backend
           port: 8000
