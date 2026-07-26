@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/beolle/sqld-backend:e5e8d22
+          image: ghcr.io/beolle/sqld-backend:sha-00dc9aa
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -28,6 +28,9 @@ spec:
                 name: backend-auth-secret
             - secretRef:
                 name: sqld-ai-provider-secret
+                optional: true
+            - secretRef:
+                name: toss-payments-secret
                 optional: true
           env:
             - name: ORACLE_WALLET_PATH
