@@ -18,7 +18,7 @@ Example:
 
 ```bash
 kubectl -n analytics create secret generic redash-app-secret \
-  --from-literal=REDASH_DATABASE_URL='postgresql://USER:PASSWORD@HOST:5432/redash' \
+  --from-literal=REDASH_DATABASE_URL="$REDASH_DATABASE_URL" \
   --from-literal=REDASH_COOKIE_SECRET='replace-with-random-cookie-secret' \
   --from-literal=REDASH_SECRET_KEY='replace-with-random-secret-key'
 ```
