@@ -1,3 +1,3 @@
 kustomize:
   images:
-  - ghcr.io/beolle/sqld-frontend:sha-022cea1
+  - ghcr.io/beolle/sqld-frontend:sha-fab54d0
