@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sqld-backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: sqld-backend
@@ -39,6 +39,8 @@ spec:
           env:
             - name: ORACLE_WALLET_PATH
               value: /app/wallet
+            - name: ORACLE_POOL_MAX
+              value: "4"
           envFrom:
             - secretRef:
                 name: oracle-db-secret
