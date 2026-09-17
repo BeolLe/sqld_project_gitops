@@ -12,3 +12,4 @@ resources:
   - front-image-updater.yaml
   - argocd-image-updater-config.yaml
   - argocd-monitoring-alerts.yaml
+  - argocd-monitoring-storage.yaml
