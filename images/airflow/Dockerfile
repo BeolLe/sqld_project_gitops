@@ -5,4 +5,6 @@ RUN python -m pip uninstall -y dbt-core dbt-postgres || true && \
         oracledb \
         requests \
         "dbt-core==1.10.0" \
-        "dbt-postgres==1.10.0"
+        "dbt-postgres==1.10.0" \
+        "pyarrow==18.1.0" \
+        "duckdb==1.4.3"
