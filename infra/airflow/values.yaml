@@ -16,6 +16,9 @@ fernetKeySecretName: airflow-fernet-key
 apiSecretKeySecretName: airflow-api-secret-key
 jwtSecretName: airflow-jwt-secret
 config:
+  execution_api:
+    # Allow delayed worker startup; observed startup exceeded the 600s default.
+    jwt_expiration_time: "1800"
   kubernetes_executor:
     delete_worker_pods: "True"
 apiServer:
