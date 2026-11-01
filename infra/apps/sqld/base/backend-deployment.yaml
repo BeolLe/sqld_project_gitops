@@ -20,7 +20,7 @@ spec:
             secretName: oracle-wallet
       containers:
         - name: sqld-backend
-          image: ghcr.io/beolle/sqld-backend@sha256:802ab26540b9e48d2205b57d0507f9f5587081ddc1f8738613022607ad3a3848
+          image: ghcr.io/beolle/sqld-backend@sha256:9090b3663b71cde6f98b8933404d3a3d6e210a15adf4ca38545c80f94e15974e
           imagePullPolicy: Always
           command:
             - /app/.venv/bin/python
@@ -37,6 +37,10 @@ spec:
           ports:
             - containerPort: 8000
           env:
+            - name: SQL_WORKSPACE_POOL_NAME
+              value: sqld-public
+            - name: SQL_WORKSPACE_POOL_SIZE
+              value: "2"
             - name: ORACLE_WALLET_PATH
               value: /app/wallet
             - name: ORACLE_POOL_MAX
