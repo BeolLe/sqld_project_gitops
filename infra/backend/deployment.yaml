@@ -35,6 +35,8 @@ spec:
           env:
             - name: ORACLE_WALLET_PATH
               value: /app/wallet
+            - name: ENABLE_ADSP
+              value: "true"
           volumeMounts:
             - name: oracle-wallet
               mountPath: /app/wallet
