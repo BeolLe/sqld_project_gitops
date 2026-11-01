@@ -33,10 +33,6 @@ spec:
                 name: toss-payments-secret
                 optional: true
           env:
-            - name: SQL_WORKSPACE_POOL_NAME
-              value: sqld-test
-            - name: SQL_WORKSPACE_POOL_SIZE
-              value: "2"
             - name: ORACLE_WALLET_PATH
               value: /app/wallet
           volumeMounts:
