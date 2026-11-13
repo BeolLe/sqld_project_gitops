@@ -1,0 +1,14 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: sqld-backend-keepalive
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: sqld-backend
+  timeout:
+    http:
+      # Retire idle connections before Uvicorn's 5s keep-alive timeout.
+      # Active requests retain the HTTPRoute's existing 75s request timeout.
+      connectionIdleTimeout: 3s

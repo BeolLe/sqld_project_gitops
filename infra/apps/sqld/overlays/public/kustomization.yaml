@@ -8,3 +8,4 @@ resources:
   - ../../base
   - frontend-route.yaml
   - backend-route.yaml
+  - backend-traffic-policy.yaml
